@@ -166,3 +166,73 @@ a.secondary {
     filter: invert();
   }
 }
+
+.container {
+  min-height: 100vh;
+  background-color: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.title {
+  font-size: 3.75rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: #22d3ee;
+}
+
+.card {
+  max-width: 42rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 2rem;
+  border-radius: 0.5rem;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #67e8f9;
+}
+
+.sectionContainer {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  color: #a5f3fc;
+  margin-bottom: 0.5rem;
+}
+
+.list {
+  list-style-type: disc;
+  list-style-position: inside;
+  color: #d1d5db;
+}
+
+.button {
+  display: block;
+  width: 100%;
+  background-color: #22d3ee;
+  color: black;
+  font-weight: bold;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-size: 1.25rem;
+  transition: background-color 0.2s;
+}
+
+.button:hover {
+  background-color: #67e8f9;
+}

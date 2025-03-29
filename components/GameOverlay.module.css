@@ -1,0 +1,42 @@
+.container {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.panel {
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+}
+
+.loopText {
+  color: #22d3ee;
+  font-size: 1.25rem;
+}
+
+.timeText {
+  color: white;
+  font-size: 1.875rem;
+  font-weight: bold;
+}
+
+.exitButton {
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  color: white;
+  text-align: center;
+  transition: background-color 0.2s;
+}
+
+.exitButton:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+}
