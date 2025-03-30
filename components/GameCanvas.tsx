@@ -141,6 +141,8 @@ export default function GameCanvas() {
       velocityRef.current = newVelocity;
     };
 
+    const PLAYER_RADIUS = 14;
+    
     function gameLoop(timestamp: number) {
       const deltaTime = lastFrameTimeRef.current
         ? (timestamp - lastFrameTimeRef.current) / 1000
@@ -233,19 +235,19 @@ export default function GameCanvas() {
       }
 
       ctx?.clearRect(0, 0, canvas.width, canvas.height);
-      state.playerHistory.forEach((loop, loopIndex) => {
-        ctx.beginPath();
-        ctx.strokeStyle = `rgba(0, 255, 255, ${0.5 - loopIndex * 0.1})`;
-        ctx.lineWidth = 3;
-        loop.forEach((pos, i) => {
-          if (i === 0) {
-            ctx.moveTo(pos.position.x, pos.position.y);
-          } else {
-            ctx.lineTo(pos.position.x, pos.position.y);
-          }
+
+      // Draw echoes
+      if (state.echoPositions && state.echoPositions.length > 0) {
+        ctx.fillStyle = "#87CEEB"; // Light blue color
+        ctx.shadowColor = "#87CEEB";
+        ctx.shadowBlur = 15;
+        state.echoPositions.forEach(echo => {
+          ctx.beginPath();
+          ctx.arc(echo.x, echo.y, PLAYER_RADIUS, 0, Math.PI * 2);
+          ctx.fill();
         });
-        ctx.stroke();
-      });
+        ctx.shadowBlur = 0;
+      }
 
       // Draw walls
       ctx.fillStyle = "#444";

@@ -72,16 +72,38 @@ const GameContext = createContext<
 function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case "NEW_LOOP":
+      const generateValidPosition = () => {
+        const minX = 100;
+        const maxX = 700;
+        const minY = 100;
+        const maxY = 500;
+
+        return {
+          x: Math.random() * (maxX - minX) + minX,
+          y: Math.random() * (maxY - minY) + minY,
+        };
+      };
+      const newEchoes = Array.from({ length: 5 }, () =>
+        generateValidPosition()
+      );
+
       return {
         ...state,
         currentLoop: state.currentLoop + 1,
         timeRemaining: 30,
         currentPosition: level1.startPosition,
-        playerHistory: [
-          ...state.playerHistory,
-          state.movementHistory[state.currentLoop - 1] || [],
-        ],
+        echoPositions: newEchoes,
         isPlaying: true,
+        velocity: { x: 0, y: 0 },
+        isMoving: false,
+      };
+
+    case "GAME_OVER":
+      return {
+        ...state,
+        isPlaying: false,
+        gameOver: true,
+        gameOverMessage: action.payload,
       };
 
     case "UPDATE_TIME":
