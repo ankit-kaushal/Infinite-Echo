@@ -95,7 +95,6 @@ export default function GameCanvas() {
       ctx.shadowBlur = 0;
     }
 
-    const lastTime = 0;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!state.isPlaying || state.gameOver) return;
       const speed = 1;
@@ -160,7 +159,7 @@ export default function GameCanvas() {
             const dx = state.currentPosition.x - echo.x;
             const dy = state.currentPosition.y - echo.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            
+
             if (distance < PLAYER_RADIUS * 2) {
               dispatch({
                 type: "GAME_OVER",
@@ -173,7 +172,7 @@ export default function GameCanvas() {
         }
 
         if (velocityRef.current.x !== 0 || velocityRef.current.y !== 0) {
-          const speed = 200; // Lower speed for more precise control
+          const speed = 200;
           const newX =
             state.currentPosition.x + velocityRef.current.x * speed * deltaTime;
           const newY =
@@ -269,12 +268,11 @@ export default function GameCanvas() {
         }
       }
 
-      // Drawing code
       ctx?.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw echoes
       if (state.echoPositions && state.echoPositions.length > 0) {
-        ctx.fillStyle = "#87CEEB"; // Light blue color
+        ctx.fillStyle = "#87CEEB";
         ctx.shadowColor = "#87CEEB";
         ctx.shadowBlur = 15;
         state.echoPositions.forEach((echo) => {

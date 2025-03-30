@@ -41,8 +41,8 @@ const initialState: GameState = {
   isMoving: false,
   showLevelComplete: false,
   persistentDoors: new Set(),
-  gameOver: false, // Add missing property
-  gameOverMessage: "", // Add missing property
+  gameOver: false,
+  gameOverMessage: "",
 };
 
 type GameAction =
@@ -59,7 +59,7 @@ type GameAction =
   | {
       type: "UPDATE_MOVEMENT";
       payload: { position: Position; velocity: Position };
-    }; // Add new action type
+    };
 
 const GameContext = createContext<
   | {
@@ -154,7 +154,8 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         currentPosition: action.payload.position,
         velocity: action.payload.velocity,
-        isMoving: action.payload.velocity.x !== 0 || action.payload.velocity.y !== 0,
+        isMoving:
+          action.payload.velocity.x !== 0 || action.payload.velocity.y !== 0,
       };
 
     case "SET_VELOCITY":
