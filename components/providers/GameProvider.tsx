@@ -154,8 +154,20 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         currentPosition: action.payload.position,
         velocity: action.payload.velocity,
-        isMoving:
-          action.payload.velocity.x !== 0 || action.payload.velocity.y !== 0,
+        isMoving: action.payload.velocity.x !== 0 || action.payload.velocity.y !== 0,
+      };
+
+    case "SET_VELOCITY":
+      return {
+        ...state,
+        velocity: action.payload,
+        isMoving: action.payload.x !== 0 || action.payload.y !== 0,
+      };
+
+    case "UPDATE_POSITION":
+      return {
+        ...state,
+        currentPosition: action.payload,
       };
 
     case "STORE_HISTORY":

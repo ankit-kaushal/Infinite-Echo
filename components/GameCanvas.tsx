@@ -6,11 +6,15 @@ import { level1 } from "./levels/Level1";
 import styles from "./GameCanvas.module.css";
 import Toast from "./Toast";
 
+const PLAYER_RADIUS = 15;
+
 export default function GameCanvas() {
   const velocityRef = useRef({ x: 0, y: 0 });
   const lastFrameTimeRef = useRef(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const startTimeRef = useRef<number>(0);
+  const lastTimeUpdateRef = useRef(0);
+  const isLoopTransitioningRef = useRef(false); // Move this here
   const gameStateRef = useRef({
     isLevelComplete: false,
     buttonStates: level1.buttons.map(() => false),
@@ -95,6 +99,7 @@ export default function GameCanvas() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!state.isPlaying || state.gameOver) return;
       const speed = 1;
+      // Keep existing velocity for other direction to allow diagonal movement
       const newVelocity = { ...velocityRef.current };
 
       switch (e.code) {
@@ -117,10 +122,11 @@ export default function GameCanvas() {
       }
 
       velocityRef.current = newVelocity;
+      dispatch({ type: "SET_VELOCITY", payload: newVelocity });
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (!state.isPlaying) return;
+      if (!state.isPlaying || state.gameOver) return;
       const newVelocity = { ...velocityRef.current };
 
       switch (e.code) {
@@ -139,19 +145,17 @@ export default function GameCanvas() {
       }
 
       velocityRef.current = newVelocity;
+      dispatch({ type: "SET_VELOCITY", payload: newVelocity });
     };
 
-    const PLAYER_RADIUS = 14;
-    
+    // Update in gameLoop function
     function gameLoop(timestamp: number) {
-      const deltaTime = lastFrameTimeRef.current
-        ? (timestamp - lastFrameTimeRef.current) / 1000
-        : 0.016;
+      const deltaTime = 1 / 60;
       lastFrameTimeRef.current = timestamp;
 
       if (state.isPlaying && !state.gameOver) {
         if (velocityRef.current.x !== 0 || velocityRef.current.y !== 0) {
-          const speed = 300;
+          const speed = 200; // Lower speed for more precise control
           const newX =
             state.currentPosition.x + velocityRef.current.x * speed * deltaTime;
           const newY =
@@ -160,8 +164,7 @@ export default function GameCanvas() {
           let isGameOver = false;
           let canMove = true;
 
-          // Simplified collision detection
-          const playerRadius = 14; // Slightly reduced radius
+          const playerRadius = 14;
 
           for (const wall of level1.walls) {
             if (
@@ -216,24 +219,39 @@ export default function GameCanvas() {
 
         const elapsedTime = (timestamp - startTimeRef.current) / 1000;
         const remainingTime = Math.max(0, 30 - elapsedTime);
+        const currentSecond = Math.floor(remainingTime);
 
-        if (Math.floor(remainingTime) !== state.timeRemaining) {
-          dispatch({ type: "UPDATE_TIME", payload: Math.floor(remainingTime) });
-          dispatch({
-            type: "RECORD_MOVEMENT",
-            payload: {
-              position: state.currentPosition,
-              timestamp: Date.now(),
-            },
-          });
+        if (
+          currentSecond !== lastTimeUpdateRef.current &&
+          !isLoopTransitioningRef.current
+        ) {
+          lastTimeUpdateRef.current = currentSecond;
 
-          if (Math.floor(remainingTime) === 0 && state.timeRemaining > 0) {
+          if (currentSecond > 0) {
+            dispatch({ type: "UPDATE_TIME", payload: currentSecond });
+
+            if (!isLoopTransitioningRef.current) {
+              dispatch({
+                type: "RECORD_MOVEMENT",
+                payload: {
+                  position: state.currentPosition,
+                  timestamp: Date.now(),
+                },
+              });
+            }
+          } else if (currentSecond === 0 && state.timeRemaining > 0) {
+            isLoopTransitioningRef.current = true;
             dispatch({ type: "NEW_LOOP" });
-            startTimeRef.current = 0;
+            startTimeRef.current = timestamp;
+            lastTimeUpdateRef.current = 30;
+            setTimeout(() => {
+              isLoopTransitioningRef.current = false;
+            }, 100);
           }
         }
       }
 
+      // Drawing code
       ctx?.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw echoes
@@ -241,7 +259,7 @@ export default function GameCanvas() {
         ctx.fillStyle = "#87CEEB"; // Light blue color
         ctx.shadowColor = "#87CEEB";
         ctx.shadowBlur = 15;
-        state.echoPositions.forEach(echo => {
+        state.echoPositions.forEach((echo) => {
           ctx.beginPath();
           ctx.arc(echo.x, echo.y, PLAYER_RADIUS, 0, Math.PI * 2);
           ctx.fill();
@@ -283,7 +301,7 @@ export default function GameCanvas() {
       // Check collisions
       checkCollisions();
       requestAnimationFrame(gameLoop);
-    }
+    } // Add missing closing brace here
 
     const animationFrame = requestAnimationFrame(gameLoop);
 
