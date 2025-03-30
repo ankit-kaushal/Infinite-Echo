@@ -154,6 +154,24 @@ export default function GameCanvas() {
       lastFrameTimeRef.current = timestamp;
 
       if (state.isPlaying && !state.gameOver) {
+        // Check collision with echoes
+        if (state.echoPositions && state.echoPositions.length > 0) {
+          for (const echo of state.echoPositions) {
+            const dx = state.currentPosition.x - echo.x;
+            const dy = state.currentPosition.y - echo.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < PLAYER_RADIUS * 2) {
+              dispatch({
+                type: "GAME_OVER",
+                payload: "You collided with your echo!",
+              });
+              velocityRef.current = { x: 0, y: 0 };
+              break;
+            }
+          }
+        }
+
         if (velocityRef.current.x !== 0 || velocityRef.current.y !== 0) {
           const speed = 200; // Lower speed for more precise control
           const newX =
